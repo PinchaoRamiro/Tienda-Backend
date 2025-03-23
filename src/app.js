@@ -16,7 +16,8 @@ app.use('/api', userRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
     await connectDB();
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    await syncDB();
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
 
