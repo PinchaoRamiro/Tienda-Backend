@@ -24,19 +24,18 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
-    console.log(req.body);
     try {
         if(!email || !password) return res.status(400).json({ error: 'Complete all fields' });
         const user = await User.findOne({ where: { email } });
+
+        console.log(user);
 
         if (!user) return res.status(400).json({ error: 'User not found' });
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ error: 'Incorrect password' });
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        res.json({ token, user: { name: user.name, lastname: user.lastname, email: user.email } });
+        res.json({ user: { id: user.id , name: user.name, lastname: user.lastname, email: user.email } });
     } catch (error) {
         res.status(500).json({ error: 'Error in the server', error });
     }
