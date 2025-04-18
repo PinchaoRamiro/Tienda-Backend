@@ -1,8 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-//const { connectDB, syncDB } = require('./models');
+// const { connectDB, syncDB } = require('./models');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 require('dotenv').config();
 
@@ -11,14 +12,15 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/api/auth', authRoutes);
-app.use('/api', userRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
+
     // await connectDB(); // this method conecct to the database
 
     // await syncDB(); // this method create the tables in the database
-
 
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

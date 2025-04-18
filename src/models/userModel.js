@@ -3,15 +3,30 @@ const { sequelize } = require('../config/db');
 
 const User = sequelize.define('User', {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    name: { type: DataTypes.STRING, allowNull: false },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+        len: [2, 50],
+        }
+    },
     lastname: { type: DataTypes.STRING, allowNull: false },
-    email: { type: DataTypes.STRING, unique: true, allowNull: false },
-    typeDocument: { type: DataTypes.STRING, allowNull: false },
-    numDocument: { type: DataTypes.STRING, allowNull: false },
-    adress: { type: DataTypes.STRING, allowNull: false },
-    phone: { type: DataTypes.STRING, allowNull: false },
-    status: { type: DataTypes.BOOLEAN, defaultValue: true },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+    },
     password: { type: DataTypes.STRING, allowNull: false },
+    typeDocument: { type: DataTypes.STRING, allowNull: true },
+    numDocument: { type: DataTypes.STRING, allowNull: true },
+    adress: { type: DataTypes.STRING, allowNull: true },
+    phone: { type: DataTypes.STRING, allowNull: true },
+    status: { type: DataTypes.BOOLEAN, defaultValue: true },
+    role: {
+        type: DataTypes.STRING,
+        defaultValue: 'user' 
+    }
+    
 }, {
     timestamps: true,
 });
