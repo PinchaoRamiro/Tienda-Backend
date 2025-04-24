@@ -5,10 +5,12 @@ const jwt = require('jsonwebtoken');
 exports.register = async (req, res) => {
     const { name, lastname, email, password, typeDocument, numDocument, adress, phone } = req.body;
     try {
-        const userExists = await User.findOne({ where: { email } });
+        const userExists = await User.findOne({
+            where: { email }
+        });
         if (userExists) return res.status(409).json({ msg: 'User already exists' });
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password , 10);
 
         const user = await User.create({
             name,
@@ -33,16 +35,12 @@ exports.register = async (req, res) => {
             { expiresIn: '4h' }
         );
 
+        const { Password, ...safeUser } = user.get({ plain: true });
 
         return res.status(201).json({
             msg: 'User registered',
             token,
-            user: {
-                id: user.id,
-                name: user.name,
-                lastname: user.lastname,
-                email: user.email
-            }
+            user: safeUser
         });
     } catch (error) {
         console.error(error);
@@ -58,7 +56,9 @@ exports.login = async (req, res) => {
             return res.status(400).json({ msg: 'Please fill in all fields' });
         }
 
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({
+            where: { email }
+        });
         if (!user) return res.status(404).json({ msg: 'User not found' });
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role || 'user' 
+                role: user.role 
             },
             process.env.JWT_SECRET,
             { expiresIn: '4h' }
@@ -77,15 +77,21 @@ exports.login = async (req, res) => {
 
         return res.status(200).json({
             token,
-            user: {
-                id: user.id,
-                name: user.name,
-                lastname: user.lastname,
-                email: user.email
-            }
+            user: user
         });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ msg: 'Server error', error });
     }
 };
+
+
+exports.logout = async (_, res) => {
+    try {
+        res.clearCookie('token');
+        return res.status(200).json({ msg: 'Logged out successfully' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ msg: 'Server error', error });
+    }
+}

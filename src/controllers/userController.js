@@ -1,88 +1,141 @@
 const User = require('../models/userModel');
+const bcrypt = require('bcryptjs');
 
 exports.getUserByEmail = async (req, res) => {
-    const { email } = req.params;
-    const userLoged = req.user;
+	let { email } = req.params;
+	const userLoged = req.user;
 
-    if(userLoged.email != email){
-        res.status(401).json({msg: 'Not authorized to select the id ', email});
-        return;
-    }
+	if (req.user.role !== "admin") {
+		if (!verifyReqIdAuth("getUserByEmail", userLoged.id, req, res)) return;;
 
-    try {
-        const user = await User.findByPk(email, {
-            attributes: { exclude: ['password'] }
-        });
-        if (!user) return res.status(404).json({ msg: 'User not found' });
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ error: 'Error in the server', error });
-    }
-}
+		email = userLoged.email;
+	}
+
+	try {
+		const user = await User.findOne({
+			where: { email },
+			attributes: { exclude: ['password'] }
+		});
+
+		if (!user) return res.status(404).json({ msg: 'User not found' });
+
+		return res.status(200).json(user);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ error: 'Server error', details: error });
+	}
+};
 
 exports.getUserById = async (req, res) => {
-    const { id } = req.params;
-    const userLoged = req.user;
+	const { id } = req.params;
 
-    if(userLoged.id != id){
-        res.status(401).json({msg: 'Not authorized to select the id ', id});
-        return;
-    }
+	if (req.user.role !== "admin") {
+		if (!verifyReqIdAuth("getuserById", id, req, res)) return;
+	}
 
-    try {
-        const user = await User.findByPk(id, {
-            attributes: { exclude: ['password'] }
-        });
-        if (!user) return res.status(404).json({ msg: 'User not found' });
-        res.status(200).json(user);
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error', err });
-    }
+	try {
+		const user = await User.findByPk(id, {
+			attributes: { exclude: ['password'] }
+		});
+		if (!user) return res.status(404).json({ msg: 'User not found' });
+		res.status(200).json(user);
+	} catch (err) {
+		res.status(500).json({ msg: 'Server error', err });
+	}
 };
 
 exports.updateUserInfo = async (req, res) => {
-    const { id } = req.params;
-    const { name, lastname, typeDocument, numDocument, adress, phone } = req.body;
-    try {
-        const user = await User.findByPk(id);
-        if (!user) return res.status(404).json({ msg: 'User not found' });
+	const { id } = req.params;
+	const { name, lastname, typeDocument, numDocument, adress, phone } = req.body;
 
-        await user.update({ name, lastname, typeDocument, numDocument, adress, phone });
-        res.json({ msg: 'User updated successfully', user });
-    } catch (err) {
-        res.status(500).json({ msg: 'Error updating user', err });
-    }
+	if (!verifyReqIdAuth("upadteUserInfo", id, req, res)) return;
+
+	try {
+		const user = await User.findByPk(id, {
+			attributes: { exclude: ['password'] }
+		});
+		if (!user) return res.status(404).json({ msg: 'User not found' });
+
+		await user.update({ name, lastname, typeDocument, numDocument, adress, phone });
+		res.json({ msg: 'User updated successfully', user });
+	} catch (err) {
+		res.status(500).json({ msg: 'Error updating user', err });
+	}
 };
 
 exports.updatePassword = async (req, res) => {
-    const { id } = req.params;
-    const { currentPassword, newPassword } = req.body;
-    try {
-        const user = await User.findByPk(id);
-        if (!user) return res.status(404).json({ msg: 'User not found' });
+	const { id } = req.params;
+	const { currentPassword, newPassword } = req.body;
 
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
-        if (!isMatch) return res.status(403).json({ msg: 'Current password is incorrect' });
+	if (!currentPassword || !newPassword) {
+		return res.status(400).json({
+			msg: "Complete all fields"
+		})
+	}
 
-        const hashed = await bcrypt.hash(newPassword, 10);
-        await user.update({ password: hashed });
+	if (!verifyReqIdAuth("updatePassword", id, req, res)) return;
 
-        res.json({ msg: 'Password updated successfully' });
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error', err });
-    }
+	try {
+		const user = await User.findByPk(id);
+		if (!user) return res.status(404).json({ msg: 'User not found' });
+
+		const isMatch = await bcrypt.compare(currentPassword, user.password);
+		if (!isMatch) return res.status(403).json({ msg: 'Current password is incorrect' });
+
+		const hashed = await bcrypt.hash(newPassword, 10);
+		await user.update({ password: hashed });
+
+		res.json({ msg: 'Password updated successfully' });
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ msg: 'Server error', err });
+	}
 };
 
 exports.toggleStatus = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const user = await User.findByPk(id);
-        if (!user) return res.status(404).json({ msg: 'User not found' });
+	const { id } = req.params;
 
-        await user.update({ status: !user.status });
-        res.json({ msg: `User ${user.status ? 'activated' : 'deactivated'}` });
-    } catch (err) {
-        res.status(500).json({ msg: 'Server error', err });
-    }
+	if (!verifyReqIdAuth("toggleStatus", id, req, res)) return;
+
+	try {
+		const user = await User.findByPk(id);
+		if (!user) return res.status(404).json({ msg: 'User not found' });
+
+		await user.update({ status: !user.status });
+		res.json({ msg: `User ${user.status ? 'activated' : 'deactivated'}` });
+	} catch (err) {
+		res.status(500).json({ msg: 'Server error', err });
+	}
 };
 
+exports.delete = async (req, res) => {
+	const { id } = req.params;
+
+	if (req.user.role !== "admin") {
+		if (!verifyReqIdAuth("delete", id, req, res)) return;
+	}
+
+	try {
+		const user = await User.findByPk(id);
+		if (!user) {
+			return res.status(404).json({ msg: "User Not Found" });
+		}
+
+		await user.destroy();
+		return res.status(200).json({ msg: "User deleted" });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ msg: "Server Error" });
+	}
+}
+
+function verifyReqIdAuth(nameEndpoint, id, req, res) {
+	if (id == null) {
+		res.status(400).json({ msg: "Is necessary the id of the User" });
+		return false;
+	} else if (req.user.id != id) {
+		res.status(401).json({ msg: `Not authorized to ${nameEndpoint} the user with id ${id}` });
+		return false;
+	}
+	return true;
+}
