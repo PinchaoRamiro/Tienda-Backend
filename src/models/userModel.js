@@ -5,10 +5,7 @@ const User = sequelize.define('User', {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-        len: [1, 50],
-        }
+        allowNull: false
     },
     lastname: { type: DataTypes.STRING, allowNull: false },
     email: {
@@ -19,7 +16,7 @@ const User = sequelize.define('User', {
     password: { type: DataTypes.STRING, allowNull: false },
     typeDocument: { type: DataTypes.STRING, allowNull: true },
     numDocument: { type: DataTypes.STRING, allowNull: true },
-    adress: { type: DataTypes.STRING, allowNull: true },
+    address: { type: DataTypes.STRING, allowNull: true },
     phone: { type: DataTypes.STRING, allowNull: true },
     status: { type: DataTypes.BOOLEAN, defaultValue: true },
     role: {

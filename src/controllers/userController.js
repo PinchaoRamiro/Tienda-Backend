@@ -46,7 +46,7 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUserInfo = async (req, res) => {
 	const { id } = req.params;
-	const { name, lastname, typeDocument, numDocument, adress, phone } = req.body;
+	const { name, lastname, typeDocument, numDocument, address, phone } = req.body;
 
 	if (!verifyReqIdAuth("upadteUserInfo", id, req, res)) return;
 
@@ -56,7 +56,7 @@ exports.updateUserInfo = async (req, res) => {
 		});
 		if (!user) return res.status(404).json({ msg: 'User not found' });
 
-		await user.update({ name, lastname, typeDocument, numDocument, adress, phone });
+		await user.update({ name, lastname, typeDocument, numDocument, address, phone });
 		res.json({ msg: 'User updated successfully', user });
 	} catch (err) {
 		res.status(500).json({ msg: 'Error updating user', err });

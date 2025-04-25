@@ -4,6 +4,10 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const productRoutes = require('./routes/productRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const orderItemRoutes = require('./routes/orderItemsRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 require('dotenv').config();
 
@@ -14,6 +18,10 @@ app.use(cors());
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/product', productRoutes);
+app.use('/api/order', orderRoutes);
+app.use('/api/order-items', orderItemRoutes);
+app.use('/api/category', categoryRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
