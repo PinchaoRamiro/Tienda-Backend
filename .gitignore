@@ -2,3 +2,10 @@
 /node_modules/
 /dist/
 createfirstAdmin.js
+
+/public
+  /images
+    /products
+      *.png
+      *.jpg
+      *.jpeg
