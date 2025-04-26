@@ -12,6 +12,9 @@ const categoryRoutes = require('./routes/categoryRoutes');
 require('dotenv').config();
 
 const app = express();
+
+app.use('/public', express.static('public'));
+
 app.use(express.json());
 app.use(cors());
 
@@ -30,7 +33,7 @@ app.listen(PORT, async () => {
 
     // await syncDB(); // this method create the tables in the database
 
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`Server runing in http://localhost:${PORT}`);
 });
 
 

@@ -51,7 +51,11 @@ exports.getOrderItems = async (req, res) => {
       return res.status(404).json({ message: 'There are no products in this order.' });
     }
 
-    res.status(200).json(orderItems);
+    res.status(200).json({
+      success: true,
+      data: orderItems,
+      message: 'Orders fetched successfully'
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error getting OrderItems.' });

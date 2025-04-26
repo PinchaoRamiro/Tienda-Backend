@@ -3,29 +3,49 @@ const Category = require('../models/categoryModel');
 
 exports.createProduct = async (req, res) => {
   try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ msg: 'Only admins can create products' });
+    }
+
     const { name, description, price, stock, category_id } = req.body;
 
     if (!name || !price || !category_id) {
-      return res.status(400).json({ msg: 'Name, price and category are required.' });
+      return res.status(400).json({ msg: 'Name, price and category be required' });
     }
 
-    const category = await Category.findByPk(category_id);
-    if (!category) return res.status(404).json({ msg: 'Category not found.' });
+    const image = req.file ? `/public/images/products/${req.file.filename}` : null;
 
-    const product = await Product.create({ name, description, price, stock, category_id });
-    res.status(201).json(product);
+    const product = await Product.create({
+      name,
+      description,
+      price,
+      stock,
+      category_id,
+      image
+    });
+
+    res.status(201).json({
+      success: true,
+      data: product,
+      message: 'Product created successfully'
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server Error', error: err });
   }
 };
 
+
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll({
       include: [{ model: Category, attributes: ['category_name'] }]
     });
-    res.json(products);
+    res.json({
+      success: true,
+      data: products,
+      message: 'Products fetched successfully'
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }
@@ -52,7 +72,11 @@ exports.updateProduct = async (req, res) => {
     if (!product) return res.status(404).json({ msg: 'Producto not found.' });
 
     await product.update(req.body);
-    res.json({ msg: 'Updated Product', product });
+    res.json({
+      success: true,
+      data: product,
+      message: 'Product updated successfully'
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }
@@ -66,7 +90,9 @@ exports.deleteProduct = async (req, res) => {
     if (!product) return res.status(404).json({ msg: 'Producto not found.' });
 
     await product.destroy();
-    res.json({ msg: 'Product disposed correctly' });
+    res.json({
+      success: true,
+      message: 'Product disposed correctly' });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }

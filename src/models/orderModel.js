@@ -15,8 +15,8 @@ const Order = sequelize.define('Order', {
     }
   },
   status: {
-    type: DataTypes.ENUM('Pendiente', 'Pagado', 'Enviado', 'Entregado', 'Cancelado'),
-    defaultValue: 'Pendiente'
+    type: DataTypes.ENUM('Pending', 'Paid', 'Shipped', 'Delivered', 'Canceled'),
+    defaultValue: 'Pending'
   },
   total_amount: {
     type: DataTypes.DECIMAL(10, 2),

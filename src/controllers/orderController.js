@@ -42,7 +42,11 @@ exports.createOrder = async (req, res) => {
 exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({ include: OrderItem });
-    res.json(orders);
+    res.json({
+      success: true,
+      data: orders,
+      message: 'Orders fetched successfully'
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }
@@ -55,7 +59,11 @@ exports.getMyOrders = async (req, res) => {
       where: { user_id: req.user.id },
       include: OrderItem
     });
-    res.json(orders);
+    res.json({
+      success: true,
+      data: orders,
+      message: 'Orders fetched successfully'
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }

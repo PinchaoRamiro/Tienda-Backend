@@ -37,7 +37,11 @@ exports.getCategoryById = async (req, res) => {
   try {
     const category = await Category.findByPk(req.params.id);
     if (!category) return res.status(404).json({ msg: 'Category not found' });
-    res.json(category);
+    res.json({
+      success: true,
+      data: category,
+      message: 'Category fetched successfully'
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }

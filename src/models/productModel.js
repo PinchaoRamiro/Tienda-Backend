@@ -26,6 +26,10 @@ const Product = sequelize.define('Product', {
       model: 'categories',
       key: 'category_id'
     }
+  },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   tableName: 'products',

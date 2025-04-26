@@ -34,7 +34,11 @@ exports.getUsers = async (req, res) => {
       where: { role: "user" },
       attributes: { exclude: ['password'] }
     });
-    res.status(200).json(users);
+    res.status(200).json({
+      success: true,
+      data: users,
+      message: 'Users fetched successfully'
+    });
   } catch (err) {
     res.status(500).json({ error: 'Error in the server', err });
   }
@@ -46,7 +50,11 @@ exports.getAdmins = async (req, res) => {
       where: { role: "admin" },
       attributes: { exclude: ['password'] }
     });
-    res.status(200).json(users);
+    res.status(200).json({
+      success: true,
+      data: users,
+      message: 'Admins fetched successfully'
+    });
   } catch (err) {
     res.status(500).json({ error: 'Error in the server', err });
   }
@@ -70,6 +78,21 @@ exports.updateRole = async (req, res) => {
     res.status(500).json({ msg: 'Server error', err });
   }
 };
+
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+
+    await user.destroy();
+    res.json({ msg: 'User deleted successfully' });
+  }
+  catch (err) {
+    res.status(500).json({ msg: 'Server error', err });
+  }
+}
 
 
 
