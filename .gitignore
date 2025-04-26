@@ -3,9 +3,4 @@
 /dist/
 createfirstAdmin.js
 
-/public
-  /images
-    /products
-      *.png
-      *.jpg
-      *.jpeg
+/public/images/products/
