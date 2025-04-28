@@ -8,6 +8,7 @@ const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const orderItemRoutes = require('./routes/orderItemsRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const adminReportRoutes = require('./routes/adminReportRoutes');
 
 require('dotenv').config();
 
@@ -25,6 +26,7 @@ app.use('/api/product', productRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/order-items', orderItemRoutes);
 app.use('/api/category', categoryRoutes);
+app.use('/api/admin/report', adminReportRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {

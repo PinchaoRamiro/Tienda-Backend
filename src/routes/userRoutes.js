@@ -6,7 +6,7 @@ const { logout } = require('../controllers/authController');
 
 router.get('/by-email/:email', verifyToken,  userController.getUserByEmail);
 router.get('/:id', verifyToken, userController.getUserById);
-router.put('/:id', verifyToken, userController.updateUserInfo);
+router.put('/update/:id', verifyToken, userController.updateUserInfo);
 router.put('/password/:id', verifyToken, userController.updatePassword);
 router.patch('/status/:id', verifyToken, userController.toggleStatus);
 router.post('/logout', verifyToken, logout );

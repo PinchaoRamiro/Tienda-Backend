@@ -21,6 +21,7 @@ exports.register = async (req, res) => {
             numDocument,
             address,
             phone,
+            status: true,
             role: 'user' 
         });
 
@@ -80,11 +81,13 @@ exports.login = async (req, res) => {
             user: {
                 id: user.id,
                 name: user.name,
+                lastname: user.lastname,
                 email: user.email,
                 typeDocument: user.typeDocument,
                 numDocument: user.numDocument,
                 address: user.address,
                 phone: user.phone,
+                status: user.status,
                 role: user.role
             }
         });

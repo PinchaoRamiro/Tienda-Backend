@@ -15,9 +15,12 @@ exports.createCategory = async (req, res) => {
     }
 
     const category = await Category.create({ category_name });
-    res.status(201).json(category);
+    res.status(201).json({
+      success: true,
+      data: category,
+      message: 'Category created successfully'
+    });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ msg: 'Server error', error: err });
   }
 };
@@ -26,7 +29,11 @@ exports.createCategory = async (req, res) => {
 exports.getAllCategories = async (req, res) => {
   try {
     const categories = await Category.findAll();
-    res.json(categories);
+    res.json({
+      success: true,
+      data: categories,
+      message: 'Categories fetched successfully'
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }
@@ -60,7 +67,11 @@ exports.updateCategory = async (req, res) => {
     }
 
     await category.update({ category_name });
-    res.json({ msg: 'Updated category', category });
+    res.json({
+      success: true,
+       message: 'Updated category', category
+
+       });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }
@@ -74,8 +85,12 @@ exports.deleteCategory = async (req, res) => {
     if (!category) return res.status(404).json({ msg: 'Category not found' });
 
     await category.destroy();
-    res.json({ msg: 'Successfully deleted category' });
+    res.json({
+      success: true,
+      message: 'Category deleted successfully'
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }
 };
+

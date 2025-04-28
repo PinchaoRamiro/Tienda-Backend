@@ -46,7 +46,9 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUserInfo = async (req, res) => {
 	const { id } = req.params;
-	const { name, lastname, typeDocument, numDocument, address, phone } = req.body;
+	const { name, lastname, email, typeDocument, numDocument, address, phone, status } = req.body;
+
+	console.log("updateUserInfo", id, req.body);
 
 	if (!verifyReqIdAuth("upadteUserInfo", id, req, res)) return;
 
@@ -56,8 +58,23 @@ exports.updateUserInfo = async (req, res) => {
 		});
 		if (!user) return res.status(404).json({ msg: 'User not found' });
 
-		await user.update({ name, lastname, typeDocument, numDocument, address, phone });
-		res.json({ msg: 'User updated successfully', user });
+		// actualizar los datos del usuario
+		await user.update({
+			name,
+			lastname,
+			email,
+			typeDocument,
+			numDocument,
+			address,
+			phone,
+			status
+		});
+
+		return res.status(200).json({ 
+			status: true,
+			message: 'User updated successfully',
+			data: user
+		 });
 	} catch (err) {
 		res.status(500).json({ msg: 'Error updating user', err });
 	}
@@ -95,14 +112,18 @@ exports.updatePassword = async (req, res) => {
 exports.toggleStatus = async (req, res) => {
 	const { id } = req.params;
 
-	if (!verifyReqIdAuth("toggleStatus", id, req, res)) return;
+	if (!verifyReqIdAuth("toggleStatus", id, req, res) && req.user.role != "admin") return;
 
 	try {
 		const user = await User.findByPk(id);
 		if (!user) return res.status(404).json({ msg: 'User not found' });
 
 		await user.update({ status: !user.status });
-		res.json({ msg: `User ${user.status ? 'activated' : 'deactivated'}` });
+		res.json({
+			success: true,
+			data: user,
+			message: `User status updated to ${user.status ? 'active' : 'inactive'}`
+		});
 	} catch (err) {
 		res.status(500).json({ msg: 'Server error', err });
 	}

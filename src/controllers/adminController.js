@@ -16,8 +16,9 @@ exports.registerAdmin = async (req, res) => {
     });
 
     return res.status(201).json({
-      msg: 'Admin registered successfully',
-      admin: {
+      success: true,
+      mesage: 'Admin registered successfully',
+      data: {
         id: newAdmin.id,
         name: newAdmin.name,
         email: newAdmin.email
@@ -31,7 +32,7 @@ exports.registerAdmin = async (req, res) => {
 exports.getUsers = async (req, res) => {
   try {
     const users = await User.findAll({
-      where: { role: "user" },
+      where: { role: "user"},
       attributes: { exclude: ['password'] }
     });
     res.status(200).json({
@@ -47,12 +48,17 @@ exports.getUsers = async (req, res) => {
 exports.getAdmins = async (req, res) => {
   try {
     const users = await User.findAll({
-      where: { role: "admin" },
+      where: { role: "admin"},
       attributes: { exclude: ['password'] }
     });
+
+    // remove admin logged in from the list of admins
+    const adminLogged = req.user.id;
+    const filteredUsers = users.filter(user => user.id !== adminLogged);
+
     res.status(200).json({
       success: true,
-      data: users,
+      data: filteredUsers,
       message: 'Admins fetched successfully'
     });
   } catch (err) {
@@ -73,7 +79,11 @@ exports.updateRole = async (req, res) => {
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
     await user.update({ role });
-    res.json({ msg: `User role updated to ${role}` });
+    res.json({ 
+      success: true,
+      data: user,
+      message: 'User role updated successfully'
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server error', err });
   }
@@ -87,7 +97,10 @@ exports.deleteUser = async (req, res) => {
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
     await user.destroy();
-    res.json({ msg: 'User deleted successfully' });
+    res.json({
+      success: true,
+      message: 'User deleted successfully'
+    });
   }
   catch (err) {
     res.status(500).json({ msg: 'Server error', err });
