@@ -10,24 +10,56 @@ const OrderItem = require('./orderItemModel');
 // Relaciones
 
 // Usuario tiene muchas órdenes
-User.hasMany(Order, { foreignKey: 'user_id' });
-Order.belongsTo(User, { foreignKey: 'user_id' });
+User.hasMany(Order, {
+  foreignKey: 'user_id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE'
+});
+Order.belongsTo(User, {
+  foreignKey: 'user_id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE'
+});
 
 // Categoría tiene muchos productos
-Category.hasMany(Product, { foreignKey: 'category_id' });
-Product.belongsTo(Category, { foreignKey: 'category_id' });
+Category.hasMany(Product, {
+  foreignKey: 'category_id',
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE'
+});
+Product.belongsTo(Category, {
+  foreignKey: 'category_id',
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE'
+});
 
 // Orden tiene muchos items
-Order.hasMany(OrderItem, { foreignKey: 'order_id' });
-OrderItem.belongsTo(Order, { foreignKey: 'order_id' });
+Order.hasMany(OrderItem, {
+  foreignKey: 'order_id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE'
+});
+OrderItem.belongsTo(Order, {
+  foreignKey: 'order_id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE'
+});
 
 // Producto puede estar en muchos items
-Product.hasMany(OrderItem, { foreignKey: 'product_id' });
-OrderItem.belongsTo(Product, { foreignKey: 'product_id' });
+Product.hasMany(OrderItem, {
+  foreignKey: 'product_id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE'
+});
+OrderItem.belongsTo(Product, {
+  foreignKey: 'product_id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE'
+});
 
 // Sincronización de la DB
 const syncDB = async () => {
-  await sequelize.sync({ alter: true }); // o { force: true } si estás desarrollando
+  await sequelize.sync({ alter: true });
 };
 
 module.exports = {

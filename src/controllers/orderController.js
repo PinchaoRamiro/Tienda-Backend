@@ -1,6 +1,4 @@
-const Order = require('../models/orderModel');
-const OrderItem = require('../models/orderItemModel');
-const Product = require('../models/productModel');
+const {  Product, Order, OrderItem} = require('../models/index');
 
 // Create a order (client)
 exports.createOrder = async (req, res) => {
@@ -53,11 +51,16 @@ exports.getAllOrders = async (req, res) => {
 };
 
 // get orders of user autenticated
-exports.getMyOrders = async (req, res) => {
+exports.getMyOrders = async (req, res) => { 
   try {
     const orders = await Order.findAll({
       where: { user_id: req.user.id },
-      include: OrderItem
+      include: [
+        {
+          model: OrderItem,
+          include: [Product]
+        }
+      ]
     });
     res.json({
       success: true,
@@ -71,14 +74,27 @@ exports.getMyOrders = async (req, res) => {
 
 //  Get order by ID (admin o owner)
 exports.getOrderById = async (req, res) => {
+
+
+  const id = req.params.id;
+  if (!id) return res.status(400).json({ msg: 'Order ID is required' });
+
+  
+  const userId = req.user.id;
+
   try {
-    const order = await Order.findByPk(req.params.id, {
-      include: OrderItem
+    const order = await Order.findByPk(id, {
+      include: [
+        {
+          model: OrderItem,
+          include: [Product]
+        }
+      ]
     });
 
     if (!order) return res.status(404).json({ msg: 'Order not found' });
 
-    if (req.user.role !== 'admin' && order.user_id !== req.user.id) {
+    if (req.user.role !== 'admin' && order.user_id !== userId) {
       return res.status(403).json({ msg: 'You do not have permission to view this order.' });
     }
 
@@ -91,7 +107,6 @@ exports.getOrderById = async (req, res) => {
 // chage order status (solo admin)
 exports.updateOrderStatus = async (req, res) => {
   try {
-
     const { status } = req.body;
     const order = await Order.findByPk(req.params.id);
 

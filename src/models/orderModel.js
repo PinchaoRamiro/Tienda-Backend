@@ -20,13 +20,27 @@ const Order = sequelize.define('Order', {
     defaultValue: 'Pending'
   },
   total_amount: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(14, 2),
     allowNull: false
   }
 }, {
   tableName: 'orders',
   createdAt: 'created_at',
-  updatedAt: false
+  updatedAt: true
 });
+
+Order.associate = (models) => {
+  Order.belongsTo(models.User, {
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  });
+
+  Order.hasMany(models.OrderItem, {
+    foreignKey: 'order_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  });
+};
 
 module.exports = Order;

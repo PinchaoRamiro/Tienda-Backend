@@ -1,4 +1,4 @@
-const User = require('../models/userModel');
+const {  User} = require('../models'); 
 const bcrypt = require('bcryptjs');
 
 exports.registerAdmin = async (req, res) => {
@@ -62,6 +62,7 @@ exports.getAdmins = async (req, res) => {
       message: 'Admins fetched successfully'
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Error in the server', err });
   }
 };

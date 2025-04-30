@@ -1,5 +1,4 @@
-const Product = require('../models/productModel');
-const Category = require('../models/categoryModel');
+const { Product, Category } = require('../models'); // Asegúrate de que la ruta sea correcta
 const { Op } = require('sequelize');
 
 exports.createProduct = async (req, res) => {
@@ -40,17 +39,26 @@ exports.createProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll({
-      include: [{ model: Category, attributes: ['category_name'] }]
+      include: [
+        {
+          model: Category,
+          attributes: ['category_name']
+        }
+      ]
     });
+
     return res.json({
       success: true,
       data: products,
       message: 'Products fetched successfully'
     });
   } catch (err) {
+    console.error('❌ Sequelize error:', err);
     res.status(500).json({ msg: 'Server Error', error: err });
   }
 };
+
+
 
 // get product by ID
 exports.getProductById = async (req, res) => {

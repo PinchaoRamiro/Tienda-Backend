@@ -1,4 +1,4 @@
-const Category = require('../models/categoryModel');
+const { Category } = require('../models'); // Importar el modelo de categoría
 
 // Crear una categoría (solo admin)
 exports.createCategory = async (req, res) => {

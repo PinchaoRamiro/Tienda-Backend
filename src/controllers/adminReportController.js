@@ -1,6 +1,4 @@
-const User = require('../models/userModel');
-const Product = require('../models/productModel');
-const Order = require('../models/orderModel');
+const { User, Product, Order } = require('../models');
 const { Sequelize } = require('sequelize');
 
 // Informe general

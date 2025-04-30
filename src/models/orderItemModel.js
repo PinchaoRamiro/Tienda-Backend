@@ -34,4 +34,18 @@ const OrderItem = sequelize.define('OrderItem', {
   timestamps: false
 });
 
+OrderItem.associate = (models) => {
+  OrderItem.belongsTo(models.Order, {
+    foreignKey: 'order_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  });
+
+  OrderItem.belongsTo(models.Product, {
+    foreignKey: 'product_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  });
+};
+
 module.exports = OrderItem;

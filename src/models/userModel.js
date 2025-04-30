@@ -28,4 +28,22 @@ const User = sequelize.define('User', {
     timestamps: true,
 });
 
+User.associate = (models) => {
+    User.hasMany(models.Order, {
+        foreignKey: 'user_id',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    });
+};
+
+User.associate = (models) => {
+    User.hasMany(models.Order, {
+        foreignKey: 'user_id',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    });
+};
+
+
+
 module.exports = User;

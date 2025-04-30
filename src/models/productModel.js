@@ -13,7 +13,7 @@ const Product = sequelize.define('Product', {
   },
   description: DataTypes.TEXT,
   price: {
-    type: DataTypes.NUMBER(10, 2),
+    type: DataTypes.DECIMAL(14, 2),
     allowNull: false
   },
   stock: {
@@ -36,5 +36,13 @@ const Product = sequelize.define('Product', {
   createdAt: 'created_at',
   updatedAt: false
 });
+
+Product.associate = (models) => {
+  Product.belongsTo(models.Category, {
+    foreignKey: 'category_id',
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE'
+  });
+};
 
 module.exports = Product;
