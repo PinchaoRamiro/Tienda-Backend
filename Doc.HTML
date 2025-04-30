@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentación de la API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        code, pre { background-color: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
+        pre { padding: 10px; overflow-x: auto; }
+        h1, h2, h3 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>API REST - Node.js / Express</h1>
+    <p>Esta es una API construida en Node.js utilizando Express. Proporciona funcionalidades para autenticación, gestión de usuarios, productos, pedidos y reportes administrativos.</p>
+
+    <h2>📁 Estructura del Proyecto</h2>
+    <pre><code>src/
+├── app.js
+├── config/
+│   └── db.js
+├── controllers/
+├── middleware/
+├── models/
+├── routes/
+└── utils/</code></pre>
+
+    <h2>🚀 Instalación</h2>
+    <pre><code>git clone &lt;repositorio&gt;
+cd src
+npm install</code></pre>
+    <p>Configura las variables de entorno en un archivo <code>.env</code>.</p>
+
+    <h2>▶️ Uso</h2>
+    <pre><code>npm start</code></pre>
+    <p>El servidor por defecto corre en <code>http://localhost:5000</code>.</p>
+
+    <h2>🔐 Rutas Disponibles</h2>
+    <p>Las rutas están organizadas por módulo y montadas bajo <code>/api/</code>.</p>
+
+    <h3>Autenticación</h3>
+    <ul>
+        <li><code>POST /api/auth/register</code> - Registrar un nuevo usuario</li>
+        <li><code>POST /api/auth/login</code> - Iniciar sesión</li>
+    </ul>
+
+    <h3>Usuarios</h3>
+    <ul>
+        <li><code>GET /api/user/profile</code> - Obtener el perfil del usuario (requiere token)</li>
+        <li><code>PUT /api/user/profile</code> - Actualizar perfil</li>
+    </ul>
+
+    <h3>Administrador</h3>
+    <ul>
+        <li><code>GET /api/admin/users</code> - Listar usuarios</li>
+        <li><code>DELETE /api/admin/user/:id</code> - Eliminar usuario</li>
+    </ul>
+
+    <h3>Productos</h3>
+    <ul>
+        <li><code>GET /api/product</code> - Listar productos</li>
+        <li><code>POST /api/product</code> - Crear producto</li>
+        <li><code>PUT /api/product/:id</code> - Actualizar producto</li>
+        <li><code>DELETE /api/product/:id</code> - Eliminar producto</li>
+    </ul>
+
+    <h3>Pedidos</h3>
+    <ul>
+        <li><code>POST /api/order</code> - Crear un pedido</li>
+        <li><code>GET /api/order</code> - Listar pedidos</li>
+    </ul>
+
+    <h3>Categorías</h3>
+    <ul>
+        <li><code>GET /api/category</code> - Listar categorías</li>
+        <li><code>POST /api/category</code> - Crear categoría</li>
+    </ul>
+
+    <h3>Reportes Administrativos</h3>
+    <ul>
+        <li><code>GET /api/admin/report/sales</code> - Reporte de ventas</li>
+        <li><code>GET /api/admin/report/users</code> - Reporte de usuarios</li>
+    </ul>
+
+    <h2>🛡️ Middleware</h2>
+    <p><code>authMiddleware.js</code>: Protege rutas privadas mediante verificación de JWT.</p>
+</body>
+</html>
