@@ -15,10 +15,7 @@
     "dialect": "postgres"
   },
   "production": {
-    "username": "postgres",
-    "password": "db3&86mypc",
-    "database": "tiendaJava", 
-    "host": 5432,
+    "use_env_variable":"DATABASE_URL",
     "dialect": "postgres"
   }
 }

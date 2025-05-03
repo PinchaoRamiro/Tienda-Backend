@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+//const { sequelize } = require('../config/db');
+const { sequelize } = require('../config/db_remote'); // Cambia esto si usas una base de datos diferente
 
 const Product = sequelize.define('Product', {
   product_id: {

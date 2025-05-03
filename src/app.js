@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 // const { connectDB, syncDB } = require('./models');
+// const { connectDB, syncDB } = require('./config/db_remote');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');

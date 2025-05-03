@@ -10,6 +10,9 @@ exports.createProduct = async (req, res) => {
       return res.status(400).json({ msg: 'Name, price and category are required' });
     }
 
+    console.log('req.body', req.body);
+    console.log('req.file', req.file);
+
     const image = req.file ? `/public/images/products/${req.file.filename}` : null;
 
     const product = await Product.create({
@@ -214,7 +217,6 @@ exports.searchProducts = async (req, res) => {
       },
       include: [{ 
         model: Category, attributes: ['category_name'],
-        model: ProductAttribute,
         include: [Attribute]
        }]
     });
