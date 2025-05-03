@@ -33,13 +33,13 @@ exports.getOutOfStockProducts = async (req, res) => {
 
     const products = await Product.findAll({ where: { stock: 0 } });
 
-    res.json({
+    return res.json({
       success: true,
       data: products,
       message: 'Out of stock products fetched successfully'
     });
   } catch (err) {
-    res.status(500).json({ msg: 'Error en el servidor', error: err });
+    return res.status(500).json({ msg: 'Error en el servidor', error: err });
   }
 };
 
@@ -55,12 +55,12 @@ exports.getOrdersByStatus = async (req, res) => {
       group: ['status']
     });
 
-    res.json({
+    return res.json({
       succsess: true,
       data: orders,
       message: 'Orders by status fetched successfully'
     });
   } catch (err) {
-    res.status(500).json({ msg: 'Server error', error: err });
+    return res.status(500).json({ msg: 'Server error', error: err });
   }
 };

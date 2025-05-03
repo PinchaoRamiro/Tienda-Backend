@@ -6,8 +6,37 @@ const Product = require('./productModel');
 const Category = require('./categoryModel');
 const Order = require('./orderModel');
 const OrderItem = require('./orderItemModel');
+const ProductAttribute = require('./productAttributeModel');
+const Attribute = require('./attributeModel');
 
 // Relaciones
+
+// Producto tiene muchos atributos
+Attribute.belongsTo(Category, {
+   foreignKey: 'category_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  });
+
+Category.hasMany(Attribute, {
+   foreignKey: 'category_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  });
+
+Product.hasMany(ProductAttribute, {
+   foreignKey: 'product_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+
+});
+
+ProductAttribute.belongsTo(Attribute, {
+   foreignKey: 'attribute_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+   });
+
 
 // Usuario tiene muchas órdenes
 User.hasMany(Order, {
@@ -69,5 +98,7 @@ module.exports = {
   Product,
   Category,
   Order,
-  OrderItem
+  OrderItem,
+  ProductAttribute,
+  Attribute
 };

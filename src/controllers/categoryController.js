@@ -1,4 +1,4 @@
-const { Category } = require('../models'); // Importar el modelo de categoría
+const { Category, Attribute } = require('../models'); // Importar el modelo de categoría
 
 // Crear una categoría (solo admin)
 exports.createCategory = async (req, res) => {
@@ -28,13 +28,19 @@ exports.createCategory = async (req, res) => {
 // Obtener todas las categorías
 exports.getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.findAll();
-    res.json({
+    const categories = await Category.findAll({
+      include: [
+        // Incluir atributos relacionados si es necesario
+        { model: Attribute, attributes: ['name'] }
+      ]
+    });
+    return res.json({
       success: true,
       data: categories,
       message: 'Categories fetched successfully'
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: 'Server Error', error: err });
   }
 };

@@ -1,16 +1,13 @@
-const { Product, Category } = require('../models'); // Asegúrate de que la ruta sea correcta
+const { Product, Category, ProductAttribute, Attribute} = require('../models'); // Asegúrate de que la ruta sea correcta
 const { Op } = require('sequelize');
 
 exports.createProduct = async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ msg: 'Only admins can create products' });
-    }
 
-    const { name, description, price, stock, category_id } = req.body;
+    const { name, description, price, stock, category_id, attributes } = req.body;
 
     if (!name || !price || !category_id) {
-      return res.status(400).json({ msg: 'Name, price and category be required' });
+      return res.status(400).json({ msg: 'Name, price and category are required' });
     }
 
     const image = req.file ? `/public/images/products/${req.file.filename}` : null;
@@ -24,25 +21,37 @@ exports.createProduct = async (req, res) => {
       image
     });
 
+    // Atributos personalizados (si se envían)
+    if (attributes && Array.isArray(attributes)) {
+      for (const attr of attributes) {
+        await ProductAttribute.create({
+          product_id: product.product_id,
+          attribute_id: attr.attribute_id,
+          value: attr.value
+        });
+      }
+    }
+
     return res.status(201).json({
       success: true,
       data: product,
       message: 'Product created successfully'
     });
+
   } catch (err) {
     console.error(err);
     return res.status(500).json({ msg: 'Server Error', error: err });
   }
 };
 
-
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll({
       include: [
+        { model: Category, attributes: ['category_name'] },
         {
-          model: Category,
-          attributes: ['category_name']
+          model: ProductAttribute,
+          include: [{ model: Attribute, attributes: ['name'] }]
         }
       ]
     });
@@ -53,47 +62,49 @@ exports.getAllProducts = async (req, res) => {
       message: 'Products fetched successfully'
     });
   } catch (err) {
-    console.error('❌ Sequelize error:', err);
+    console.error(err);
     res.status(500).json({ msg: 'Server Error', error: err });
   }
 };
 
-
-
-// get product by ID
 exports.getProductById = async (req, res) => {
+  const id = parseInt(req.params.id, 10);
 
-  const { id } = req.params;
-
-  if (!id) {
-    return res.status(400).json({ msg: 'Product ID is required' });
-  }else if (id !== parseInt(id, 10)) {
+  if (isNaN(id)) {
     return res.status(400).json({ msg: 'Product ID must be a number' });
   }
 
   try {
-    const product = await Product.findByPk(req.params.id, {
-      include: [{ model: Category, attributes: ['category_name'] }]
+    const product = await Product.findByPk(id, {
+      include: [
+        { model: Category, attributes: ['category_name'] },
+        {
+          model: ProductAttribute,
+          include: [{ model: Attribute, attributes: ['name'] }]
+        }
+      ]
     });
+
     if (!product) return res.status(404).json({ msg: 'Product not found.' });
+
     return res.json({
       success: true,
       data: product,
       message: 'Product fetched successfully'
     });
+
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }
 };
 
-//  (only admin)
 exports.updateProduct = async (req, res) => {
   try {
-
     const product = await Product.findByPk(req.params.id);
-    if (!product) return res.status(404).json({ msg: 'Producto not found.' });
+    if (!product) return res.status(404).json({ msg: 'Product not found.' });
 
     await product.update(req.body);
+
     return res.json({
       success: true,
       data: product,
@@ -104,21 +115,22 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-// (soft delete opcional)
 exports.deleteProduct = async (req, res) => {
   try {
-
     const product = await Product.findByPk(req.params.id);
-    if (!product) return res.status(404).json({ msg: 'Producto not found.' });
+    if (!product) return res.status(404).json({ msg: 'Product not found.' });
 
-    await product.destroy();
+    await product.destroy(); // Esto también elimina los ProductAttributes si está bien relacionado
+
     return res.json({
       success: true,
-      message: 'Product disposed correctly' });
+      message: 'Product deleted successfully'
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }
 };
+
 
 exports.getProductsByCategory = async (req, res) => {
   try {
@@ -197,10 +209,14 @@ exports.searchProducts = async (req, res) => {
     const products = await Product.findAll({
       where: {
         name: {
-          [Op.iLike]: `%${search}%` // Mejor: insensible a mayúsculas/minúsculas en PostgreSQL
+          [Op.iLike]: `%${search}%`
         }
       },
-      include: [{ model: Category, attributes: ['category_name'] }]
+      include: [{ 
+        model: Category, attributes: ['category_name'],
+        model: ProductAttribute,
+        include: [Attribute]
+       }]
     });
 
     if (products.length === 0) {

@@ -45,4 +45,20 @@ Product.associate = (models) => {
   });
 };
 
+Product.associate = (models) => {
+  Product.hasMany(models.OrderItem, {
+    foreignKey: 'product_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  });
+}
+
+  Product.associate = (models) => {
+    Product.hasMany(models.ProductAttribute, {
+      foreignKey: 'product_id',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    });
+  }
+
 module.exports = Product;

@@ -112,20 +112,22 @@ exports.updatePassword = async (req, res) => {
 exports.toggleStatus = async (req, res) => {
 	const { id } = req.params;
 
-	if (!verifyReqIdAuth("toggleStatus", id, req, res) && req.user.role != "admin") return;
+	if (req.user.role !== "admin") {
+		if (!verifyReqIdAuth("toggleStatus", id, req, res)) return;
+	}
 
 	try {
 		const user = await User.findByPk(id);
 		if (!user) return res.status(404).json({ msg: 'User not found' });
 
 		await user.update({ status: !user.status });
-		res.json({
+		return res.status(200).json({
 			success: true,
 			data: user,
 			message: `User status updated to ${user.status ? 'active' : 'inactive'}`
 		});
 	} catch (err) {
-		res.status(500).json({ msg: 'Server error', err });
+		return res.status(500).json({ msg: 'Server error', err });
 	}
 };
 
