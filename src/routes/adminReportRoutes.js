@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const adminReportController = require('../controllers/AdminReportController');
+const adminReportController = require('../controllers/adminReportController');
 const { verifyToken , isAdmin} = require('../middleware/authMiddleware');
 
 // Reportes
