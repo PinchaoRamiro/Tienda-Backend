@@ -3,4 +3,8 @@
 /dist/
 createfirstAdmin.js
 
-/public/images/products/
+# ignore images
+*.png
+*.jpg
+*.jpeg
+*.gif
