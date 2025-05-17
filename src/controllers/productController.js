@@ -54,14 +54,42 @@ exports.getAllProducts = async (req, res) => {
         { model: Category, attributes: ['category_name'] },
         {
           model: ProductAttribute,
-          include: [{ model: Attribute, attributes: ['name'] }]
+          attributes: ['value'],
+          include: [
+            { model: Attribute, attributes: ['name'] }
+          ]
         }
       ]
     });
 
+    // Transform response
+    const formatted = products.map(product => {
+      const prod = {
+        product_id: product.product_id,
+        category_id: product.category_id,
+        Category: product.Category?.category_name || null,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        image: product.image,
+        created_at: product.created_at
+      };
+
+      // Add each custom attribute as a key
+      product.ProductAttributes.forEach(attr => {
+        const attrName = attr.Attribute?.name;
+        if (attrName) {
+          prod[attrName] = attr.value;
+        }
+      });
+
+      return prod;
+    });
+
     return res.json({
       success: true,
-      data: products,
+      data: formatted,
       message: 'Products fetched successfully'
     });
   } catch (err) {
@@ -71,35 +99,62 @@ exports.getAllProducts = async (req, res) => {
 };
 
 exports.getProductById = async (req, res) => {
-  const id = parseInt(req.params.id, 10);
-
-  if (isNaN(id)) {
-    return res.status(400).json({ msg: 'Product ID must be a number' });
-  }
+  const { id } = req.params;
 
   try {
     const product = await Product.findByPk(id, {
       include: [
-        { model: Category, attributes: ['category_name'] },
+        {
+          model: Category,
+          attributes: ['category_name']
+        },
         {
           model: ProductAttribute,
-          include: [{ model: Attribute, attributes: ['name'] }]
+          attributes: ['value'],
+          include: [
+            {
+              model: Attribute,
+              attributes: ['name']
+            }
+          ]
         }
       ]
     });
 
-    if (!product) return res.status(404).json({ msg: 'Product not found.' });
+    if (!product) return res.status(404).json({ msg: 'Product not found' });
 
-    return res.json({
+    //     // Transform response
+    // const formatted = () => {
+    //     product_id: product.product_id,
+    //     category_id: product.category_id,
+    //     Category: product.Category?.category_name || null,
+    //     name: product.name,
+    //     description: product.description,
+    //     price: product.price,
+    //     stock: product.stock,
+    //     image: product.image,
+    //     created_at: product.created_at,
+
+    //   // Add each custom attribute as a key
+    //   product.ProductAttributes.forEach(attr => {
+    //     const attrName = attr.Attribute?.name;
+    //     if (attrName) {
+    //       prod[attrName] = attr.value;
+    //     }
+    //   });
+
+    //   return prod;
+    // });
+
+    res.json({
       success: true,
-      data: product,
-      message: 'Product fetched successfully'
+      data: product
     });
-
   } catch (err) {
-    res.status(500).json({ msg: 'Server Error', error: err });
+    res.status(500).json({ msg: 'Server error', error: err });
   }
 };
+
 
 exports.updateProduct = async (req, res) => {
   try {
@@ -133,7 +188,6 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ msg: 'Server Error', error: err });
   }
 };
-
 
 exports.getProductsByCategory = async (req, res) => {
   try {
@@ -205,6 +259,8 @@ exports.searchProducts = async (req, res) => {
     // Normalizar la cadena de búsqueda
     search = search.replace(/^%|%$/g, ''); // elimina % al principio y al final
 
+    console.log(search);
+
     if (search.length === 0) {
       return res.status(400).json({ msg: 'this not be empty' });
     }
@@ -215,24 +271,50 @@ exports.searchProducts = async (req, res) => {
           [Op.iLike]: `%${search}%`
         }
       },
-      include: [{ 
-        model: Category, attributes: ['category_name'],
-        include: [Attribute]
-       }]
+      include: [ 
+        { model: Category, attributes: ['category_name'] },
+        {
+          model: ProductAttribute,
+          include: [{ model: Attribute, attributes: ['name'] }]
+        }
+      ]
     });
 
     if (products.length === 0) {
       return res.status(404).json({ msg: 'Not found' });
     }
 
+        // Transform response
+    const formatted = products.map(product => {
+      const prod = {
+        product_id: product.product_id,
+        category_id: product.category_id,
+        Category: product.Category?.category_name || null,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        image: product.image,
+        created_at: product.created_at
+      };
+
+      // Add each custom attribute as a key
+      product.ProductAttributes.forEach(attr => {
+        const attrName = attr.Attribute?.name;
+        if (attrName) {
+          prod[attrName] = attr.value;
+        }
+      });
+
+      return prod;
+    });
+
     return res.json({
       success: true,
-      data: products,
+      data: formatted,
       message: 'Products fetched successfully'
     });
   } catch (err) {
-    console.error(err);
-    console.log('Error en la búsqueda de productos:', err);
     return res.status(500).json({ msg: 'Server Error', error: err });
   }
 };

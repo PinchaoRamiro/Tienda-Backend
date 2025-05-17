@@ -8,7 +8,6 @@ router.get('/by-email/:email', verifyToken,  userController.getUserByEmail);
 router.get('/:id', verifyToken, userController.getUserById);
 router.put('/update/:id', verifyToken, userController.updateUserInfo);
 router.put('/password/:id', verifyToken, userController.updatePassword);
-router.put('/status/:id', verifyToken, userController.toggleStatus);
 router.post('/logout', verifyToken, logout );
 
 module.exports = router;

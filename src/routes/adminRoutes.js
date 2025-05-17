@@ -7,6 +7,8 @@ const {logout} = require('../controllers/authController');
 router.post('/register-admin', verifyToken, isAdmin, adminController.registerAdmin);
 router.post('/logout', verifyToken, isAdmin, logout);
 router.get('/users', verifyToken, isAdmin, adminController.getUsers );
+router.get('/search-admin', verifyToken, isAdmin,  adminController.searchAdmins);
+router.get('/search-user', verifyToken, isAdmin,  adminController.searchUsers);
 router.get('/admins', verifyToken, isAdmin, adminController.getAdmins );
 router.patch('/user-role/:id', verifyToken, isAdmin, adminController.updateRole);
 router.delete('/user/:id', verifyToken, isAdmin, adminController.deleteUser);

@@ -1,4 +1,5 @@
 const {  User} = require('../models'); 
+const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
 exports.registerAdmin = async (req, res) => {
@@ -44,6 +45,88 @@ exports.getUsers = async (req, res) => {
     res.status(500).json({ error: 'Error in the server', err });
   }
 };
+
+exports.searchAdmins = async (req, res) => {
+  try {
+    const search = (req.query.q || req.body.search || '').trim().replace(/^%|%$/g, '');
+
+    if (!search) {
+      return res.status(400).json({ msg: 'Search term is required' });
+    }
+
+    const users = await User.findAll({
+      where: {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { name: { [Op.iLike]: `%${search}%` } },
+              { email: { [Op.iLike]: `%${search}%` } }
+            ]
+          },
+          { role: 'admin' }
+        ]
+      },
+      attributes: { exclude: ['password'] }
+    });
+
+    if (!users.length) {
+      return res.status(404).json({ msg: 'No admin users found' });
+    }
+
+    return res.json({
+      success: true,
+      data: users,
+      message: 'Admins found successfully'
+    });
+  } catch (err) {
+    console.error('Error searching admins:', err);
+    return res.status(500).json({ msg: 'Server Error', error: err });
+  }
+};
+
+exports.searchUsers = async (req, res) => {
+  const {q} = req.query;
+
+  let search = q || req.body.search;
+
+  if (!search || typeof search !== 'string') {
+    return res.status(400).json({ msg: 'Pleace you need this' });
+  }
+
+    try {
+      search = search.replace(/^%|%$/g, ''); // elimina % al principio y al final
+  
+      if (search.length === 0) {
+        return res.status(400).json({ msg: 'This not be empty' });
+      }
+  
+      const users = await User.findAll({
+        where: {
+          name: {
+            [Op.iLike]: `%${search}%`
+          },
+          email: {
+            [Op.iLike]: `%${search}%`
+          },
+          role: 'user'
+        }
+      });
+  
+      if (users.length === 0) {
+        return res.status(404).json({ msg: 'Not found' });
+      }
+  
+      return res.json({
+        success: true,
+        data: users,
+        message: 'Users find successfully'
+      });
+    } catch (err) {
+      console.error(err);
+      console.log('Error searching users:', err);
+      return res.status(500).json({ msg: 'Server Error', error: err });
+    }
+}
 
 exports.getAdmins = async (req, res) => {
   try {

@@ -50,23 +50,6 @@ exports.getAttributesByCategory = async (req, res) => {
   }
 };
 
-// 📦 Obtener todos los atributos
-exports.getAllAttributes = async (req, res) => {
-  try {
-    const attributes = await Attribute.findAll({
-      include: [{ model: Category, attributes: ['category_name'] }]
-    });
-
-    res.json({
-      success: true,
-      data: attributes,
-      message: 'All attributes fetched successfully'
-    });
-  } catch (err) {
-    res.status(500).json({ msg: 'Server Error', error: err });
-  }
-};
-
 exports.updateProductWithAttributes = async (req, res) => {
   try {
     const { id } = req.params;

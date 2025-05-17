@@ -1,4 +1,4 @@
-const { sequelize, connectDB } = require('../config/db');
+const { sequelize, connectDB, DataTypes } = require('../config/db_remote');
 
 // Modelos
 const User = require('./userModel');
@@ -94,6 +94,7 @@ const syncDB = async () => {
 module.exports = {
   connectDB,
   syncDB,
+  DataTypes,
   User,
   Product,
   Category,

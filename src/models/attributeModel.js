@@ -1,5 +1,5 @@
-//const { sequelize } = require('../config/db');
-const { sequelize, DataTypes } = require('../config/db_remote'); // Cambia esto si usas una base de datos diferente
+const { sequelize, DataTypes} = require('../config/db');
+// const { sequelize, DataTypes } = require('../config/db_remote'); // Cambia esto si usas una base de datos diferente
 
 const Attribute = sequelize.define('Attribute', {
     attribute_id: {
