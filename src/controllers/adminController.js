@@ -95,6 +95,8 @@ exports.searchUsers = async (req, res) => {
 
     try {
       search = search.replace(/^%|%$/g, ''); // elimina % al principio y al final
+
+      console.log(search);
   
       if (search.length === 0) {
         return res.status(400).json({ msg: 'This not be empty' });
@@ -102,13 +104,16 @@ exports.searchUsers = async (req, res) => {
   
       const users = await User.findAll({
         where: {
-          name: {
-            [Op.iLike]: `%${search}%`
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { name: { [Op.iLike]: `%${search}%` } },
+              { lastname: { [Op.iLike]: `%${search}%` } },
+              { email: { [Op.iLike]: `%${search}%` } }
+            ]
           },
-          email: {
-            [Op.iLike]: `%${search}%`
-          },
-          role: 'user'
+          { role: 'user' }
+        ]
         }
       });
   

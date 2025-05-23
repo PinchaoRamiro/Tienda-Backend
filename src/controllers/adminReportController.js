@@ -6,7 +6,9 @@ exports.getDashboardSummary = async (req, res) => {
   try {
 
     const [totalUsers, totalProducts, totalOrders, totalIncome] = await Promise.all([
-      User.count(),
+
+      // only count user with role user
+      User.count({ where: { role: 'user' } }),
       Product.count(),
       Order.count(),
       Order.sum('total_amount')

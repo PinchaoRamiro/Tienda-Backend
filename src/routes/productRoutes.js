@@ -5,6 +5,9 @@ const { verifyToken, isAdmin} = require('../middleware/authMiddleware');
 const upload = require('../middleware/upload');
 
 router.post('/create', verifyToken, upload.single('image'), productController.createProduct);
+router.post('/create/electronic', verifyToken, upload.single('image'), productController.createProductElectronics);
+router.post('/create/clothing', verifyToken, upload.single('image'), productController.createProductClothing);
+router.post('/create/furniture', verifyToken, upload.single('image'), productController.createProductFurniture);
 router.get('/search', verifyToken,  productController.searchProducts);
 router.get('/get/', verifyToken, productController.getAllProducts);
 

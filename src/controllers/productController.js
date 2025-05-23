@@ -6,6 +6,9 @@ exports.createProduct = async (req, res) => {
 
     const { name, description, price, stock, category_id, attributes } = req.body;
 
+    console.log('req.body', req.body);
+    console.log('req.file', req.file);
+
     if (!name || !price || !category_id) {
       return res.status(400).json({ msg: 'Name, price and category are required' });
     }
@@ -46,6 +49,176 @@ exports.createProduct = async (req, res) => {
     return res.status(500).json({ msg: 'Server Error', error: err });
   }
 };
+
+// createt a product Clothing
+// {
+            // "category_id": 17,
+            // "name": "Jeans",
+            // "description": "Black slim jeans",
+            // "price": "39.99",
+            // "stock": 15,
+            // "image": null,
+            // "created_at": "2025-05-16T09:42:39.782Z",
+            // "Size": "L",
+            // "Color": "Black",
+            // "Material": "Denim"
+//         }
+
+exports.createProductClothing = async (req, res) => {
+  try {
+    const { category_id, name, description, price, stock, image, Size, Color, Material } = req.body;
+    console.log('req.body', req.body);
+
+    if (!name || !price || !category_id) {
+      return res.status(400).json({ msg: 'Name, price and category are required' });
+    }
+    const product = await Product.create({
+      category_id,
+      name,
+      description,
+      price,
+      stock,
+      image
+    });
+    console.log('product', product);
+    // Atributos personalizados (si se envían)
+    if (Size) {
+      await ProductAttribute.create({
+        product_id: product.product_id,
+        attribute_id: 37, // ID del atributo "Size"
+        value: Size
+      });
+    }
+    if (Color) {
+      await ProductAttribute.create({
+        product_id: product.product_id,
+        attribute_id: 38, // ID del atributo "Color"
+        value: Color
+      });
+    }
+    if (Material) {
+      await ProductAttribute.create({
+        product_id: product.product_id,
+        attribute_id: 39, // ID del atributo "Material"
+        value: Material
+      });
+    }
+    return res.status(201).json({
+      success: true,
+      data: product,
+      message: 'Product created successfully'
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: 'Server Error', error: err });
+  }
+}
+
+exports.createProductElectronics = async (req, res) => {
+  try {
+    const { category_id, name, description, price, stock, image, Brand, Warranty, Voltage } = req.body;
+    console.log('req.body', req.body);
+    console.log('req.file', req.file);
+    if (!name || !price || !category_id) {
+      return res.status(400).json({ msg: 'Name, price and category are required' });  
+    }
+    const product = await Product.create({
+      category_id,
+      name,
+      description,
+      price,
+      stock,
+      image
+    });
+    console.log('product', product);
+    // Atributos personalizados (si se envían)
+    if (Brand) {
+      await ProductAttribute.create({
+        product_id: product.product_id,
+        attribute_id: 42, // ID del atributo "Brand"
+        value: Brand
+      });
+
+    }
+    if (Warranty) {
+      await ProductAttribute.create({
+        product_id: product.product_id,
+        attribute_id: 41, // ID del atributo "Warranty"
+        value: Warranty
+      });
+    }
+    if (Voltage) {
+      await ProductAttribute.create({
+        product_id: product.product_id,
+        attribute_id: 40, // ID del atributo "Voltage"
+        value: Voltage
+      });
+    }
+    return res.status(201).json({
+      success: true,
+      data: product,
+      message: 'Product created successfully'
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: 'Server Error', error: err });
+  }
+}
+
+exports.createProductFurniture = async (req, res) => {
+  try {
+    const { category_id, name, description, price, stock, image, Dimensions, Material, woodType } = req.body;
+    console.log('req.body', req.body);
+    console.log('req.file', req.file);
+
+    if (!name || !price || !category_id) {
+      return res.status(400).json({ msg: 'Name, price and category are required' });
+    }
+    const product = await Product.create({
+      category_id,
+      name,
+      description,
+      price,
+      stock,
+      image
+    });
+    console.log('product', product);
+
+    // Atributos personalizados (si se envían)
+    if (Dimensions) {
+      await ProductAttribute.create({
+        product_id: product.product_id,
+        attribute_id: 43, // ID del atributo "Dimensions"
+        value: Dimensions
+      });
+    }
+
+    if (Material) {
+      await ProductAttribute.create({
+        
+        product_id: product.product_id,
+        attribute_id: 44, // ID del atributo "Material"
+        value: Material
+      });
+    }
+    if (woodType) {
+      await ProductAttribute.create({
+        product_id: product.product_id,
+        attribute_id: 45, // ID del atributo "Woodtype"
+        value: woodType
+    })
+    }
+    return res.status(201).json({
+      success: true,
+      data: product,
+      message: 'Product created successfully'
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: 'Server Error', error: err });
+  }
+}
+
 
 exports.getAllProducts = async (req, res) => {
   try {

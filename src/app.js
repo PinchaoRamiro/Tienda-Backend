@@ -11,7 +11,6 @@ const orderRoutes = require('./routes/orderRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const adminReportRoutes = require('./routes/adminReportRoutes');
 
-
 require('dotenv').config();
 
 const app = express();
