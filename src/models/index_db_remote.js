@@ -8,6 +8,7 @@ const Order = require('./orderModel');
 const OrderItem = require('./orderItemModel');
 const ProductAttribute = require('./productAttributeModel');
 const Attribute = require('./attributeModel');
+const Payment = require('./paymentModel');
 
 // Relaciones
 
@@ -86,6 +87,22 @@ OrderItem.belongsTo(Product, {
   onUpdate: 'CASCADE'
 });
 
+// Modelo de Pago
+// Order hasOne Payment
+Order.hasOne(Payment, {
+  foreignKey: 'order_id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE'
+});
+
+// Payment belongsTo Order
+Payment.belongsTo(Order, {
+  foreignKey: 'order_id',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE'
+});
+
+
 // Sincronización de la DB
 const syncDB = async () => {
   await sequelize.sync({ alter: true });
@@ -101,5 +118,6 @@ module.exports = {
   Order,
   OrderItem,
   ProductAttribute,
-  Attribute
+  Attribute,
+  Payment
 };

@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 // const { connectDB, syncDB } = require('./models');
-// // const { connectDB, syncDB } = require('./config/db_remote');
+// const { connectDB, syncDB } = require('./config/db_remote');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -10,6 +10,7 @@ const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const adminReportRoutes = require('./routes/adminReportRoutes');
+const paymentRoutes = require('./routes/paymentRoutes'); 
 
 require('dotenv').config();
 
@@ -28,7 +29,7 @@ app.use('/api/product', productRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/category', categoryRoutes);
 app.use('/api/admin/report', adminReportRoutes);
-
+app.use('/api/payment', paymentRoutes); 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
 

@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
-// const { sequelize } = require('../config/db_remote'); // Cambia esto si usas una base de datos diferente
+// const { sequelize } = require('../config/db_remote'); // Para la base de datos remota
 
 const Order = sequelize.define('Order', {
   order_id: {
@@ -23,6 +23,14 @@ const Order = sequelize.define('Order', {
   total_amount: {
     type: DataTypes.DECIMAL(14, 2),
     allowNull: false
+  },
+  shipping_address: {
+  type: DataTypes.STRING,
+  allowNull: true
+  },
+  payment_method: {
+    type: DataTypes.STRING, // e.g. 'card', 'paypal'
+    allowNull: true
   }
 }, {
   tableName: 'orders',

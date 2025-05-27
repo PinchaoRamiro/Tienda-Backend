@@ -240,7 +240,7 @@ exports.getAllProducts = async (req, res) => {
       const prod = {
         product_id: product.product_id,
         category_id: product.category_id,
-        Category: product.Category?.category_name || null,
+        Category: product.Category|| null,
         name: product.name,
         description: product.description,
         price: product.price,
@@ -274,6 +274,11 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   const { id } = req.params;
 
+  console.log('getProductById id', id);
+  if (!id) {
+    return res.status(400).json({ msg: 'Product ID is required' });
+  }
+
   try {
     const product = await Product.findByPk(id, {
       include: [
@@ -294,30 +299,9 @@ exports.getProductById = async (req, res) => {
       ]
     });
 
+    console.log('product', product);
+
     if (!product) return res.status(404).json({ msg: 'Product not found' });
-
-    //     // Transform response
-    // const formatted = () => {
-    //     product_id: product.product_id,
-    //     category_id: product.category_id,
-    //     Category: product.Category?.category_name || null,
-    //     name: product.name,
-    //     description: product.description,
-    //     price: product.price,
-    //     stock: product.stock,
-    //     image: product.image,
-    //     created_at: product.created_at,
-
-    //   // Add each custom attribute as a key
-    //   product.ProductAttributes.forEach(attr => {
-    //     const attrName = attr.Attribute?.name;
-    //     if (attrName) {
-    //       prod[attrName] = attr.value;
-    //     }
-    //   });
-
-    //   return prod;
-    // });
 
     res.json({
       success: true,
