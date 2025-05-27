@@ -28,10 +28,6 @@ const Order = sequelize.define('Order', {
   type: DataTypes.STRING,
   allowNull: true
   },
-  payment_method: {
-    type: DataTypes.STRING, // e.g. 'card', 'paypal'
-    allowNull: true
-  }
 }, {
   tableName: 'orders',
   createdAt: 'created_at',

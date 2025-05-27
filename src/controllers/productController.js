@@ -50,20 +50,6 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// createt a product Clothing
-// {
-            // "category_id": 17,
-            // "name": "Jeans",
-            // "description": "Black slim jeans",
-            // "price": "39.99",
-            // "stock": 15,
-            // "image": null,
-            // "created_at": "2025-05-16T09:42:39.782Z",
-            // "Size": "L",
-            // "Color": "Black",
-            // "Material": "Denim"
-//         }
-
 exports.createProductClothing = async (req, res) => {
   try {
     const { category_id, name, description, price, stock, image, Size, Color, Material } = req.body;
@@ -274,7 +260,6 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   const { id } = req.params;
 
-  console.log('getProductById id', id);
   if (!id) {
     return res.status(400).json({ msg: 'Product ID is required' });
   }
@@ -298,8 +283,6 @@ exports.getProductById = async (req, res) => {
         }
       ]
     });
-
-    console.log('product', product);
 
     if (!product) return res.status(404).json({ msg: 'Product not found' });
 
@@ -415,8 +398,6 @@ exports.searchProducts = async (req, res) => {
 
     // Normalizar la cadena de búsqueda
     search = search.replace(/^%|%$/g, ''); // elimina % al principio y al final
-
-    console.log(search);
 
     if (search.length === 0) {
       return res.status(400).json({ msg: 'this not be empty' });

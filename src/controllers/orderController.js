@@ -1,35 +1,55 @@
-const {  Product, Order, OrderItem} = require('../models');
+const {  Product, Order, OrderItem, Payment} = require('../models');
 
 // Create a order (client)
 exports.createOrder = async (req, res) => {
   try {
-    const { items, total_amount } = req.body;
+    const user_id = req.user.id; // Viene del middleware auth
+    const { total_amount, orderItems: order_items, shipping_address, payment_method } = req.body;
 
-    if (!items || items.length === 0) {
-      return res.status(400).json({ msg: 'The order must contain at least one product' });
+    console.log('Creating order for user:', user_id);
+    console.log('Order details:', { total_amount, order_items, shipping_address, payment_method });
+
+    if (!order_items || !Array.isArray(order_items) || order_items.length === 0) {
+      return res.status(400).json({ msg: 'Order must include at least one product' });
     }
-
+    // Crear orden
     const order = await Order.create({
-      user_id: req.user.id,
-      total_amount
+      user_id,
+      total_amount: total_amount.toFixed(2),
+      status: 'Pending',
+      shipping_address
     });
 
-    //create associated items
-    for (const item of items) {
-      const product = await Product.findByPk(item.product_id);
-      if (!product) {
-        return res.status(404).json({ msg: `Product ID ${item.product_id} not found` });
-      }
-
+    // Crear items
+    for (const item of order_items) {
       await OrderItem.create({
         order_id: order.order_id,
         product_id: item.product_id,
         quantity: item.quantity,
-        price: item.price
+        price: item.price 
       });
+
+      // Opcional: reducir stock
+      const product = await Product.findByPk(item.product_id);
+      await product.decrement('stock', { by: item.quantity });
     }
 
-    res.status(201).json({ msg: 'Order created successfully', order_id: order.order_id });
+    // Crear pago (simulado)
+    const payment = await Payment.create({
+      order_id: order.order_id,
+      payment_method,
+      amount: total_amount.toFixed(2),
+      status: 'Pending'
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Order created successfully',
+      data: {
+        order,
+        payment
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error', error: err });
@@ -40,6 +60,37 @@ exports.createOrder = async (req, res) => {
 exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({ include: OrderItem });
+    res.json({
+      success: true,
+      data: orders,
+      message: 'Orders fetched successfully'
+    });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server Error', error: err });
+  }
+};
+
+// get orders by user ID (admin)
+exports.getOrdersByUserId = async (req, res) => {
+  const userId = req.params.userId;
+
+  if (!userId) return res.status(400).json({ msg: 'User ID is required' });
+
+  try {
+    const orders = await Order.findAll({
+      where: { user_id: userId },
+      include: [
+        {
+          model: OrderItem,
+          include: [Product]
+        }
+      ]
+    });
+
+    if (orders.length === 0) {
+      return res.status(404).json({ msg: 'No orders found for this user' });
+    }
+
     res.json({
       success: true,
       data: orders,

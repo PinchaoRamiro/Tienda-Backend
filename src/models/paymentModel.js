@@ -16,15 +16,6 @@ const Payment = sequelize.define('Payment', {
       key: 'order_id'
     }
   },
-  payment_method: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    // e.g., 'credit_card', 'paypal', 'cash_on_delivery'
-  },
-  status: {
-    type: DataTypes.ENUM('Pending', 'Paid', 'Failed'),
-    defaultValue: 'Pending'
-  },
   amount: {
     type: DataTypes.DECIMAL(14, 2),
     allowNull: false
@@ -32,7 +23,12 @@ const Payment = sequelize.define('Payment', {
   paid_at: {
     type: DataTypes.DATE,
     allowNull: true
-  }
+  },
+  payment_method: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    // e.g., 'credit_card', 'paypal', 'cash_on_delivery'
+  },
 }, {
   tableName: 'payments',
   createdAt: 'created_at',
