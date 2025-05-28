@@ -108,11 +108,18 @@ exports.getMyOrders = async (req, res) => {
       where: { user_id: req.user.id },
       include: [
         {
-          model: OrderItem,
-          include: [Product]
+          model: OrderItem
         }
       ]
     });
+
+    if (orders.length === 0) {
+      return res.status(404).json({ success: false, message: 'No orders found for this user' });
+    }
+
+    console.log('Orders for user:', req.user.id);
+    console.log('Orders data:', orders);
+
     res.json({
       success: true,
       data: orders,
