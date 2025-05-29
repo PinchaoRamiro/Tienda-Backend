@@ -4,13 +4,13 @@ const {  Product, Order, OrderItem, Payment} = require('../models');
 exports.createOrder = async (req, res) => {
   try {
     const user_id = req.user.id; // Viene del middleware auth
-    const { total_amount, orderItems: order_items, shipping_address, payment_method } = req.body;
+    const { total_amount, OrderItems: order_items, shipping_address, payment_method } = req.body;
 
     console.log('Creating order for user:', user_id);
     console.log('Order details:', { total_amount, order_items, shipping_address, payment_method });
 
     if (!order_items || !Array.isArray(order_items) || order_items.length === 0) {
-      return res.status(400).json({ msg: 'Order must include at least one product' });
+      return res.status(400).json({ success: false, message: 'Order items are required' });
     }
     // Crear orden
     const order = await Order.create({
@@ -60,13 +60,27 @@ exports.createOrder = async (req, res) => {
 exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({ include: OrderItem });
+
+    // add fiel to payment_method 
+    const ordersWithPayment = await Promise.all(orders.map(async (order) => {
+      const payment = await Payment.findOne({ where: { order_id: order.order_id } });
+      return {
+        ...order.toJSON(),
+        payment_method: payment ? payment.payment_method : 'Not paid'
+      };
+    }));
+
+    if (ordersWithPayment.length === 0) {
+      return res.status(404).json({ success: false, message: 'No orders found' });
+    }
+
     res.json({
       success: true,
-      data: orders,
+      data: ordersWithPayment,
       message: 'Orders fetched successfully'
     });
   } catch (err) {
-    res.status(500).json({ msg: 'Server Error', error: err });
+    res.status(500).json({ success: false, message: 'Server Error', error: err });
   }
 };
 
@@ -116,9 +130,6 @@ exports.getMyOrders = async (req, res) => {
     if (orders.length === 0) {
       return res.status(404).json({ success: false, message: 'No orders found for this user' });
     }
-
-    console.log('Orders for user:', req.user.id);
-    console.log('Orders data:', orders);
 
     res.json({
       success: true,
@@ -171,7 +182,11 @@ exports.updateOrderStatus = async (req, res) => {
     if (!order) return res.status(404).json({ msg: 'Order not found' });
 
     await order.update({ status });
-    res.json({ msg: 'Updated status', order });
+    res.json({ 
+      success: true,
+      data: order,
+      message: 'Order status updated successfully'
+     });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }

@@ -396,8 +396,6 @@ exports.searchProducts = async (req, res) => {
       return res.status(400).json({ msg: 'Pleace you need this' });
     }
 
-    // Normalizar la cadena de búsqueda
-    search = search.replace(/^%|%$/g, ''); // elimina % al principio y al final
 
     if (search.length === 0) {
       return res.status(400).json({ msg: 'this not be empty' });
@@ -410,7 +408,7 @@ exports.searchProducts = async (req, res) => {
         }
       },
       include: [ 
-        { model: Category, attributes: ['category_name'] },
+        { model: Category},
         {
           model: ProductAttribute,
           include: [{ model: Attribute, attributes: ['name'] }]
@@ -427,7 +425,7 @@ exports.searchProducts = async (req, res) => {
       const prod = {
         product_id: product.product_id,
         category_id: product.category_id,
-        Category: product.Category?.category_name || null,
+        Category: product.Category|| null,
         name: product.name,
         description: product.description,
         price: product.price,
