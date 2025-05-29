@@ -1,5 +1,5 @@
-const { sequelize, DataTypes } = require('../config/db');
-// const { sequelize, DataTypes } = require('../config/db_remote'); // Cambia esto si usas una base de datos diferente
+// const { sequelize, DataTypes } = require('../config/db');
+const { sequelize, DataTypes } = require('../config/db_remote'); // Cambia esto si usas una base de datos diferente
 
 const User = sequelize.define('User', {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },

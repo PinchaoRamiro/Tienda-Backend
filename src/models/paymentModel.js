@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-// const { sequelize } = require('../config/db_remote'); // Para la base de datos remota
+// const { sequelize } = require('../config/db');
+const { sequelize } = require('../config/db_remote'); // Para la base de datos remota
 
 const Payment = sequelize.define('Payment', {
   payment_id: {

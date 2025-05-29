@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 // const { connectDB, syncDB } = require('./models');
-// const { connectDB, syncDB } = require('./config/db_remote');
+const { connectDB, syncDB } = require('./config/db_remote');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
@@ -33,7 +33,7 @@ app.use('/api/payment', paymentRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
 
-    // await connectDB(); // this method conecct to the database
+    await connectDB(); // this method conecct to the database
 
     // await syncDB(); // this method create the tables in the database
 

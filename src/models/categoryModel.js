@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
-// const { sequelize } = require('../config/db_remote');
-const { sequelize } = require('../config/db');
+const { sequelize } = require('../config/db_remote');
+// const { sequelize } = require('../config/db');
 
 const Category = sequelize.define('Category', {
   category_id: {
