@@ -105,9 +105,20 @@ exports.getOrdersByUserId = async (req, res) => {
       return res.status(404).json({ msg: 'No orders found for this user' });
     }
 
+    // add fiel to payment_method 
+    const ordersWithPayment = await Promise.all(orders.map(async (order) => {
+      const payment = await Payment.findOne({ where: { order_id: order.order_id } });
+      return {
+        ...order.toJSON(),
+        payment_method: payment ? payment.payment_method : 'Not paid'
+      };
+    }));
+
+    console.log("Orders for user ID:", userId, ordersWithPayment);
+
     res.json({
       success: true,
-      data: orders,
+      data: ordersWithPayment,
       message: 'Orders fetched successfully'
     });
   } catch (err) {
@@ -130,10 +141,20 @@ exports.getMyOrders = async (req, res) => {
     if (orders.length === 0) {
       return res.status(404).json({ success: false, message: 'No orders found for this user' });
     }
+    // add fiel to payment_method
+    const ordersWithPayment = await Promise.all(orders.map(async (order) => {
+      const payment = await Payment.findOne({ where: { order_id: order.order_id } });
+      return {
+        ...order.toJSON(),
+        payment_method: payment ? payment.payment_method : 'Not paid'
+      };
+    }));
+
+    console.log("My orders:", ordersWithPayment);
 
     res.json({
       success: true,
-      data: orders,
+      data: ordersWithPayment,
       message: 'Orders fetched successfully'
     });
   } catch (err) {
@@ -146,7 +167,8 @@ exports.getOrderById = async (req, res) => {
 
 
   const id = req.params.id;
-  if (!id) return res.status(400).json({ msg: 'Order ID is required' });
+  if (!id) return res.status(400).json({success: false, message: 'Order ID is required' });
+  if (isNaN(id)) return res.status(400).json({success: false, message: 'Order ID must be a number' });
 
   
   const userId = req.user.id;
@@ -161,13 +183,33 @@ exports.getOrderById = async (req, res) => {
       ]
     });
 
-    if (!order) return res.status(404).json({ msg: 'Order not found' });
+    //Add field to payment_method
+    const orderWithPayment = await Payment.findOne({ where: { order_id: order.order_id } })
+      .then(payment => {
+        return {
+          ...order.toJSON(),
+          payment_method: payment ? payment.payment_method : 'Not paid'
+        };
+      }
+      );
+
+    console.log("Order details:", orderWithPayment);
+
+    if (!order) return res.status(404).json({ 
+      success: false,
+      message: 'Order not found'
+     });
 
     if (req.user.role !== 'admin' && order.user_id !== userId) {
       return res.status(403).json({ msg: 'You do not have permission to view this order.' });
     }
 
-    res.json(order);
+
+    res.json({
+      success: true,
+      data: orderWithPayment,
+      message: 'Order fetched successfully'
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server Error', error: err });
   }
