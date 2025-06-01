@@ -128,6 +128,10 @@ exports.delete = async (req, res) => {
 			return res.status(404).json({ msg: "User Not Found" });
 		}
 
+		if(user.name === "Super" && user.lastname === "Admin") {
+			return res.status(403).json({ msg: "Can't delete Super Admin" });
+		}
+
 		await user.destroy();
 		return res.status(200).json({ msg: "User deleted" });
 	} catch (err) {
