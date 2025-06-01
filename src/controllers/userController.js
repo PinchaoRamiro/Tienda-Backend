@@ -64,6 +64,10 @@ exports.updateUserInfo = async (req, res) => {
 		});
 		if (!user) return res.status(404).json({ msg: 'User not found' });
 
+		if (user.name === "Super" && user.lastname === "Admin" && user.email === "Admin@tienda.com") {
+			return res.status(403).json({ msg: "Can't update Super Admin" });
+		}
+
 		// actualizar los datos del usuario
 		await user.update({
 			name,

@@ -185,6 +185,10 @@ exports.deleteUser = async (req, res) => {
     const user = await User.findByPk(id);
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
+    if (user.name === "Super" && user.lastname === "Admin" && user.email === "Admin@tienda.com") {
+      return res.status(403).json({ msg: "Can't delete Super Admin" });
+    }
+
     await user.destroy();
     res.json({
       success: true,
